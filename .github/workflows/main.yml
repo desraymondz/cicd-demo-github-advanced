@@ -1,0 +1,41 @@
+# The name shown in the GitHub Actions UI
+name: CI check on every PR
+
+# When should this workflow run?
+on:
+  # Run when a pull request is opened or updated
+  pull_request:
+
+  # Also run when code is pushed directly to main
+  # (useful if someone bypasses PRs)
+  push:
+    branches:
+      - main
+
+jobs:
+  # We define a job called "build"
+  build:
+    # The machine GitHub provides for us
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download the repo code into the runner
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Step 2: Install Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # Cache node_modules to speed up future runs
+          cache: npm
+
+      # Step 3: Install dependencies (same as local)
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build the project
+      # If this fails, CI fails
+      - name: Build project
+        run: npm run build
