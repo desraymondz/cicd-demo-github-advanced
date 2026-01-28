@@ -1,36 +1,194 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GitHub Advanced CI/CD Demo
 
-## Getting Started
+A Next.js project demonstrating continuous integration and continuous deployment using GitHub Actions.
 
-First, run the development server:
+## 🚀 CI/CD Setup Checklist
 
+### 1. Project Configuration File ✅
+- **File**: `package.json`
+- Contains project dependencies and scripts
+- Defines how to build and run the application
+
+### 2. Runnable Commands ✅
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install          # Install dependencies
+npm run build        # Build the production application
+npm run start        # Start the production server
+npm run lint         # Run ESLint for code quality
+npm run dev          # Start development server
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. CI Configuration File (.yml) ✅
+- **Location**: `.github/workflows/main.yml`
+- Defines automated workflows for testing and deployment
+- Triggers on push and pull requests
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 4. Upload on GitHub ✅
+```bash
+git add .
+git commit -m "Setup CI/CD pipeline"
+git push origin main
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📋 Understanding the GitHub Actions Workflow
 
-To learn more about Next.js, take a look at the following resources:
+### Workflow File: `.github/workflows/main.yml`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```yaml
+name: CI/CD Pipeline
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-## Deploy on Vercel
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run linter
+        run: npm run lint
+        
+      - name: Build application
+        run: npm run build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### What Each Section Does:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**`name`**: The workflow name displayed in GitHub Actions tab
+
+**`on`**: Triggers that start the workflow
+- `push` to `main` branch → Runs on every commit to main
+- `pull_request` to `main` → Runs on every PR targeting main
+
+**`jobs`**: Tasks to execute
+- `build-and-test`: Job name
+- `runs-on: ubuntu-latest`: Uses Ubuntu Linux environment
+
+**`steps`**: Sequential actions
+1. **Checkout code**: Downloads your repository code
+2. **Setup Node.js**: Installs Node.js version 18
+3. **Install dependencies**: Runs `npm ci` (clean install)
+4. **Run linter**: Checks code quality with ESLint
+5. **Build application**: Compiles the Next.js app
+
+---
+
+## 🔄 What Happens on Pull Requests?
+
+### Scenario 1: Teammate Adds Good Code ✅
+
+```
+Developer creates PR → GitHub Actions triggers automatically
+  ↓
+1. Checkout code ✅
+2. Setup Node.js ✅
+3. Install dependencies ✅
+4. Run linter ✅ (No errors found)
+5. Build application ✅ (Build successful)
+  ↓
+Result: All checks pass ✅
+  ↓
+Green checkmark appears on PR
+  ↓
+Safe to merge! 🎉
+```
+
+**What you see:**
+- ✅ Green checkmark next to the PR
+- "All checks have passed" message
+- Safe to merge into main branch
+- Team can review and approve confidently
+
+---
+
+### Scenario 2: Teammate Adds Problematic Code ❌
+
+```
+Developer creates PR → GitHub Actions triggers automatically
+  ↓
+1. Checkout code ✅
+2. Setup Node.js ✅
+3. Install dependencies ✅
+4. Run linter ❌ (ESLint errors detected!)
+   OR
+5. Build application ❌ (Build failed!)
+  ↓
+Result: Checks failed ❌
+  ↓
+Red X appears on PR
+  ↓
+Cannot merge until fixed! 🚫
+```
+
+**What you see:**
+- ❌ Red X next to the PR
+- "Some checks were not successful" message
+- Detailed error logs in the Actions tab
+- Merge button is blocked (if branch protection enabled)
+
+**Common Issues Caught:**
+- **Linting errors**: Unused variables, formatting issues, code style violations
+- **Build errors**: Syntax errors, missing imports, type errors
+- **Dependency issues**: Missing packages, version conflicts
+
+**Developer must:**
+1. Check the failed workflow logs
+2. Fix the errors locally
+3. Push new commits to the PR
+4. Wait for checks to pass ✅
+5. Then merge
+
+---
+
+## 🛡️ Benefits of This CI/CD Pipeline
+
+- **Automated Quality Checks**: Every PR is tested automatically
+- **Prevent Bad Code**: Broken code can't reach production
+- **Fast Feedback**: Developers know immediately if something breaks
+- **Consistent Standards**: Everyone's code is checked the same way
+- **Safe Deployments**: Only working code gets merged
+
+---
+
+## 🔧 Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Open browser
+http://localhost:3000
+```
+
+---
+
+## 📚 Tech Stack
+
+- **Framework**: Next.js 16
+- **Styling**: Tailwind CSS 4
+- **Linting**: ESLint
+- **CI/CD**: GitHub Actions
+- **Deployment**: Ready for Vercel/Netlify/AWS
+
+---
+
+**Made by Desmond SIM ITClub GitHub Advanced 2026 Demo on CI/CD**
